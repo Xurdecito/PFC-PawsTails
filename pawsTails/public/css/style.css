@@ -46,6 +46,10 @@ a.color-nav:hover{
     text-decoration: none;
 }
 
+.marronTabla{
+    background-color: #D19A47 !important; 
+}
+
 .marron-oscuro{
     color: #8b5025;
     text-decoration: none;
@@ -77,7 +81,7 @@ a.color-nav:hover{
 
 .btn-formulario:hover{
     box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
-    font-size: larger;
+    font-size: large;
 }
 /*Para eliminar los colores de fondo a la hora de hacer click en un dropdown, ya que por defecto se le aplica el color azul*/
 .dropdown-item.dropdown-menu .dropdown-item:focus, .dropdown-menu .dropdown-item:active{
@@ -97,5 +101,64 @@ a.color-nav:hover{
 .btn-catalogo{
     margin-top: 1rem;
 }
+/*Para separar el nombre de la tabla de la parte de arriba de la pagina, ya que sino queda debajo de las letras*/
+.separacion{
+    margin-top: 10rem;
+}
+/*Para que a los enlaces que se encargan tanto de permitir editar como borrar, cuando se situe el raton por encima, aumenten su tamaño*/
+.herramientas{
+    text-decoration: none;
+    transition: font-size 0.3s ease-in;
+}
+.herramientas:hover{
+    font-size: large;
+}
+/*Para cambiar el color de fondo cuando el usuario arrastra el texto*/
+*::selection{
+    background-color: #D19A47;
+}
+/*Para el modal que aparece para agregar una categoría*/
+.campo-categoria{
+    border-color: #D19A47;
+}
+.campo-categoria:focus{
+    border-color: #D19A47;
+    box-shadow: 0 0 0 0.2rem rgba(209, 154, 71, 0.5);/*Agrega una sombra marrón alrededor del input*/
+}
+.categoria{
+    margin-top: 6.5rem;
+}
+/*Para la imagen del prodycto cuando se muestra la vista del producto con la informacion del mismo*/
+.producto-informacion{
+    width:max-content;
+    height:35rem;
+}
+/*Para que el texto que se muestra al no encontrar un producto al realizar el filtrado de productos, se muestre en el centro*/
+.productoNoEncontrado{
+    margin-top: 15rem;
+    margin-bottom: 15rem;
+}
+/*Estilo para cualquier foto la cual se quiera que al pasar el raton por encima, aumente su tamaño ligeramente para informar al usuario de que tiene
+el ratón por encima de ella*/
+.aumentoFoto{
+    transition:transform 0.5s ease-in;
+}
+.aumentoFoto:hover{
+    transform: scale(1.2);
+}
+/*Para la cruz que aparece en el carrito para eliminar la lista de articuolos añadidos*/
+#iconoBorrar {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.5s, stroke 0.3s;
+}
+
+a:hover #iconoBorrar {
+    transform: rotate(90deg);
+    stroke: red;
+}
 
 
+
+
+  

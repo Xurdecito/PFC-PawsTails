@@ -16,4 +16,8 @@ class usuario extends Model
     protected $fillable = ["nombre","correo","contrasenia","direccion","telefono","rol"];
 
     protected $hidden = ["id"];
+
+    public function carritos(){
+        return $this->hasMany(carrito::class);
+    }   
 }

@@ -26,12 +26,12 @@
 
     <section class="container d-flex justify-content-center align-items-center contenedor-formulario">
         <section class="container mt-5">
-            <h1 class="mb-4">Perfil de Usuario</h1>
-            <h5>Puedes actualizar tus datos siempre que quieras</h5>
+            <h1 class="mb-4">Perfil de Usuario de "{{$usuario->nombre}}"</h1>
+            <h5>Puedes actualizar sus datos a excepción de su contraseña</h5>
     
-            <form action="/actualizar-perfil" method="POST">
+            <form action="/pawsTails/editarUsuario/{{$usuario->id}}" method="POST">
                  <!--Se mostrara el mensaje de que los datos del usuario se han actualizado de manera correcta-->
-                        @if (session('info'))
+                        @if (session("info"))
                             <section class="container-fluid d-flex justify-content-center">
                                 <section class="alert alert-success mt-5" role="alert">{{ session("info") }}</section>
                             </section>
@@ -69,26 +69,19 @@
                     @enderror
                 </section>
 
-                <p>Cambia estos campos solo si deseas cambiar la contraseña.</p>
                 <section class="form-group p-2">
-                    <label for="contrasenia" class="marron-oscuro">Contraseña Actual:</label>
-                    <input type="password" id="contrasenia" name="contrasenia" class="form-control color-enfoque">
-                    @if(session('contrasenia'))
-                        <section class="text-danger">{{ session('contrasenia') }}</section>
-                    @endif
-                </section>
+                    <label for="rol" class="marron-oscuro">Rol("Presione el valor para ver las diferentes opciones"):</label>
+                    <select id="rol" name="rol" class="form-control color-enfoque" required>
+                        <option value="usuario" @if($usuario->rol === "usuario") selected @endif>Usuario</option>
+                        <option value="administrador" @if($usuario->rol === "administrador") selected @endif>Administrador</option>
+                        <option value="refugio"  @if($usuario->rol === "refugio") selected @endif>Refugio</option>
+                    </select>
+                </section>                
 
                 <section class="form-group p-2">
-                    <label for="contrasenia_nueva" class="marron-oscuro">Contraseña Nueva:</label>
-                    <input type="password" id="contrasenia_nueva" name="contrasenia_nueva" class="form-control color-enfoque">
-                    @error('contrasenia_nueva')
-                        <section class="text-danger">{{ $message }}</section>
-                    @enderror
-                </section>
-                
-                <section class="form-group p-2">
                     <button type="submit" class="btn btn-formulario w-100">Guardar Cambios</button>
-                    <p><a href="javascript:history.back()"><img src="{{ asset("imagenesTienda/iconos/arrow-back.png") }}" width="50" height="50"  class="img-fluid p-1 aumentoFoto"
+                    <p><a href="/pawsTails/listarUsuarios"><img src="{{ asset("imagenesTienda/iconos/arrow-back.png") }}"
+                        width="50" height="50" class="img-fluid p-1 aumentoFoto"
                         alt="Icono de una flecha para volver hacia atras"></a></p>
                 </section>
             </form>

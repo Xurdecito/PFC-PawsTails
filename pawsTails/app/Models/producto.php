@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\categoria;
 
-class producto extends Model
+class Producto extends Model
 {
     use HasFactory;
     
@@ -18,9 +18,11 @@ class producto extends Model
 
     protected $hidden = ["id"];
 
-    //Como la categoria pertenece a una tabla ajena se hace esto para indicar la relacion entre las tablas
     public function categoria()
     {
         return $this->belongsTo(categoria::class);
     }
+
+   
 }
+

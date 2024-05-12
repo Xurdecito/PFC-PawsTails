@@ -18,17 +18,19 @@ class usuarioController extends Controller
             $array = ["menu"=>"Mi perfil", 
             "enlaces"=>[
                 ["texto" => "Mis datos", "url" => "/pawsTails/perfil"],
-                ["texto" => "Mi carrito", "url" => "/pawsTails/carrito"],//cambiar
+                ["texto" => "Mi carrito", "url" => "/pawsTails/carrito"],
+                ["texto" => "Mis pedidos", "url"=> "/pawsTails/misPedidos"],
                 ["texto" => "Mis adopciones" , "url" => "/paesTails/misAdopciones"],//cambiar
                 ["texto" => "Cerrar Sesión", "url" => "/pawsTails/cerrarSesion"]
             ]
         ];
         }else if(session("rol_usuario")=="administrador"){
-            $array = ["menu"=>"Gestionar tienda", 
+            $array = ["menu"=>"Administración", 
             "enlaces"=>[
-                ["texto" => "Ver usuarios", "url" => "/pawsTails/perfil"],//cambiar
-                ["texto" => "Registrar producto", "url" => "/pawsTails/perfil"],//cambiar
-                ["texto" => "Agregar refugio", "url" => "#"],//cambiar
+                ["texto" => "Ver usuarios", "url" => "/pawsTails/listarUsuarios"],
+                ["texto" => "Registrar producto", "url" => "/pawsTails/agregarProducto"],
+                ["texto" => "Ver pedidos Tienda", "url" => "/pawsTails/pedidosTienda"],
+                ["texto" => "Agregar refugio", "url" => "/pawsTails/agregarRefugio"],
                 ["texto" => "Ver adopciones", "url" => "#"],//cambiar
                 ["texto" => "Cerrar sesion", "url" => "/pawsTails/cerrarSesion"],
             ]
@@ -103,7 +105,7 @@ class usuarioController extends Controller
             "correo" => "required|email|unique:usuarios,correo",
             "contrasenia" => "required|string|min:8",
             "direccion" => "nullable|string|max:255",
-            "telefono" => "nullable|string|max:20",
+            "telefono" => "nullable|string|min:9|max:9",
         ], [
             "nombre.required" => "El nombre es obligatorio.",
             "nombre.max" => "El nombre no puede tener más de :max caracteres.",
@@ -134,7 +136,7 @@ class usuarioController extends Controller
         if($usuario){
             return view("identificacion.datosPersonales",["usuario"=>$usuario]);
         }else{
-            // Aqui se aplica 401, porque indica sin autorizacion
+            // Aqui se aplica 401, porque indica sin autorizacion, ya que el usuario aun no ha iniciado sesion
             return response()->view("denegado.permiso", ["permiso"=>"Debes haber iniciado sesion para poder acceder a tus datos"], 401);
         }
        
@@ -145,7 +147,7 @@ class usuarioController extends Controller
             "nombre" => "required|string|max:255",
             "correo" => "required|email",
             "direccion" => "nullable|string|max:255",
-            "telefono" => "nullable|string|max:20",
+            "telefono" => "nullable|string|min:9|max:9",
         ], [
             "nombre.required" => "El nombre es obligatorio.",
             "nombre.max" => "El nombre no puede tener más de :max caracteres.",
@@ -171,21 +173,89 @@ class usuarioController extends Controller
             $actUsuario->correo = $request->correo;
         }
 
-        if(isset($request->contrasenia) && Hash::check($request->contrasenia, $actUsuario->contrasenia)){
-            $request -> validate([
-                "contrasenia_nueva" => "string|min:8",
-            ], [
-                "contrasenia_nueva.min" => "La nueva contraseña debe tener una longitud de al menos 8 caracteres.",
-            ]);
-
-            $actUsuario->contrasenia = bcrypt($request->contrasenia_nueva);
-        } else {
-            // Si la contraseña proporcionada no es igual a la de la base de datos, devuelve un mensaje de error
-            return redirect('/actualizar-perfil')->with("contrasenia", "La contraseña introducida no es correcta.");
+        if(isset($request->contrasenia)){
+            if(Hash::check($request->contrasenia, $actUsuario->contrasenia)){
+                $request -> validate([
+                    "contrasenia_nueva" => "string|min:8",
+                ], [
+                    "contrasenia_nueva.min" => "La nueva contraseña debe tener una longitud de al menos 8 caracteres.",
+                ]);
+    
+                $actUsuario->contrasenia = bcrypt($request->contrasenia_nueva);
+            }else{
+                // Si la contraseña proporcionada no es igual a la de la base de datos, devuelve un mensaje de error
+                return redirect("/actualizar-perfil")->with("contrasenia", "La contraseña introducida no es correcta.");
+            }
+           
         }
         
         $actUsuario->save();
-        return redirect('/actualizar-perfil')->with("info", "Datos actualizados correctamente");
+        return redirect("/actualizar-perfil")->with("info", "Datos actualizados correctamente");
+
+    }
+    //Funcion que recogera todos los usuarios que se encuentren en la base de datos, y los devuelve a la vista de "listarUsuarios"
+    public function listarUsuarios(){
+        //Obetenemos todos los usuarios a traves de su rol
+        $usuarios = usuario::orderBy("rol","desc")->get();
+        return response()->view("identificacion.listarUsuarios",["usuarios"=>$usuarios]);
+    }
+
+    //Funcion que a partir de un id de un usuario, se le elimina de la base de datos, solo puede acceder a ella el admin a traves de la vista
+    //que muestra a todos los usarios
+    public function borrarUsuario($id){
+        $usuario = usuario::find($id);
+        $usuario->delete();
+        return redirect("/pawsTails/listarUsuarios")->with("info", "Usuario eliminado correctamente.");
+    }
+
+    //Funcion que devuelve la vista del formulario con los datos del usuario que el administrador haya seleccionado
+    public function mostrarActualizarUsuario($id){
+        $usuario = usuario::find($id);
+        return view("identificacion.actualizarAdmin",["usuario"=>$usuario]);     
+    }
+
+    //Funcion que va a comprobar que los datos introducidos a la hora de realizar el cambio en los datos de un usuario sean validos
+    public function actualizarUsuarioAdmin(Request $request,$id){
+        $request -> validate([
+            "nombre" => "required|string|max:255",
+            "correo" => "required|email",
+            "direccion" => "nullable|string|max:255",
+            "telefono" => "nullable|string|max:20",
+        ], [
+            "nombre.required" => "El nombre es obligatorio.",
+            "nombre.max" => "El nombre no puede tener más de :max caracteres.",
+            "correo.required" => "El correo electrónico es obligatorio.",
+            "correo.email" => "El correo electrónico debe ser una dirección de correo válida.",
+            "direccion.max" => "La dirección no puede tener más de :max caracteres.",
+            "telefono.max" => "El teléfono no puede tener más de :max caracteres.",
+        ]);
+
+        $actUsuario = Usuario::find($id);
+        $actUsuario->nombre = $request->nombre;
+        $actUsuario->direccion = $request->direccion;
+        $actUsuario->telefono = $request->telefono;
+        $actUsuario->rol = $request->rol;
+
+        if($actUsuario->correo != $request->correo){
+            $request -> validate(
+                [
+                    "correo" => "unique:usuarios,correo",
+                ],
+                [
+                    "correo.unique" => "El correo que has introducido ya está en uso",
+                ]
+            );
+            $actUsuario->correo = $request->correo;
+        }
+        $actUsuario->save();
+        return redirect("/pawsTails/editarUsuario/".$id)->with("info", "Datos actualizados correctamente");
+    }
+    //Funcion qudevuelve la vista para registrar a un nuevo usuario en la tienda con el perfil de refugio
+    public function mostrarAgregarRefugio(){
+        return response()->view("identificacion.agregarRefugio");
+    }
+    //Funcion que se encargara de registrar al usuario con el rol de refugio en la base de datos
+    public function agregarRefugio(Request $request){
 
     }
     

@@ -18,7 +18,7 @@
     <section class="container-fluid navegacion">
         <nav class="navbar navbar-expand-sm bg-light container-fluid text-center fixed-top">
             <a class="navbar-brand" href="/pawsTails">
-                <img src="{{ asset('imagenesTienda/imagen sin fondo.png') }}" class="img-fluid logo"
+                <img src="{{ asset("imagenesTienda/imagen sin fondo.png") }}" class="img-fluid logo"
                     alt="logo empresa Paws and Tails">
             </a>
             <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
@@ -57,7 +57,6 @@
                         <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" stroke="#8b5025" />
                         <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" stroke="#8b5025" />
                     </svg>
-                    </a>
                 </nav>
             </section>
         </nav>
